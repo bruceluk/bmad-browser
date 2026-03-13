@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping', 'step-09-functional']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping', 'step-09-functional', 'step-10-nonfunctional']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/brainstorming/brainstorming-session-2026-03-13-1200.md']
 workflowType: 'prd'
 documentCounts:
@@ -277,3 +277,13 @@ BMAD Viewer 是一个面向团队的只读 Web 应用（Vue 3 + Golang），将 
 - FR16: 系统可以解析 Markdown 文件并提取 YAML frontmatter 元数据
 - FR17: 系统可以解析 `bmad-help.csv` 并提取工作流、命令、代理角色等字段
 - FR18: 系统可以根据目录结构自动推断文档所属的 BMAD 阶段
+
+## Non-Functional Requirements
+
+### Performance
+
+- NFR1: 首页加载时间 < 2秒（内网环境）
+- NFR2: 文档切换响应时间 < 500ms（内存缓存命中后）
+- NFR3: Markdown 文档渲染时间 < 1秒（单个文档）
+- NFR4: 系统支持 < 50 并发用户无明显性能下降
+- NFR5: 应用启动时间 < 5秒（包括文件系统扫描和缓存预热）
