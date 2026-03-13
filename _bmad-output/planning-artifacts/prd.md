@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/brainstorming/brainstorming-session-2026-03-13-1200.md']
 workflowType: 'prd'
 documentCounts:
@@ -156,3 +156,39 @@ BMAD Viewer 是一个面向团队的只读 Web 应用（Vue 3 + Golang），将 
 | `go run` 一行部署 | 旅程一 | MVP |
 | 内网服务器可访问 | 旅程一 | MVP |
 | 快速页面加载（< 2秒） | 旅程四（快速浏览） | MVP |
+
+## Web App Specific Requirements
+
+### Project-Type Overview
+
+单页应用（SPA），Vue 3 前端 + Golang 后端，仅支持 Chrome 浏览器，部署于团队内网服务器。只读浏览，无实时交互需求，无 SEO 需求，无无障碍性要求。
+
+### Technical Architecture Considerations
+
+**前端架构：**
+- Vue 3 SPA，使用 Vue Router 实现客户端路由
+- Markdown 渲染组件（客户端渲染）
+- 通过 REST API 从后端获取文档数据
+
+**后端架构：**
+- Golang HTTP 服务器，提供 REST API
+- 直接读取文件系统（`_bmad-output/` 目录 + `bmad-help.csv`）
+- 内存缓存已解析的文档数据
+- 同时托管 Vue 前端静态资源
+
+**浏览器支持：**
+- 仅 Chrome（最新稳定版）
+- 可自由使用现代 CSS 和 JS 特性，无需兼容性处理
+
+### Performance Targets
+
+- 首页加载 < 2秒（内网环境）
+- 文档切换响应 < 500ms（内存缓存命中）
+- 支持并发浏览人数：团队规模（< 50人）
+
+### Implementation Considerations
+
+- 前后端可合并为单一可执行文件（Go embed 嵌入前端资源），实现 `go run` 一行启动
+- 无需 HTTPS（内网环境），HTTP 即可
+- 无需用户认证、会话管理
+- 无需数据库驱动或 ORM
