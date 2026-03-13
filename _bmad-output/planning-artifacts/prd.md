@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/brainstorming/brainstorming-session-2026-03-13-1200.md']
 workflowType: 'prd'
 documentCounts:
@@ -192,3 +192,53 @@ BMAD Viewer 是一个面向团队的只读 Web 应用（Vue 3 + Golang），将 
 - 无需 HTTPS（内网环境），HTTP 即可
 - 无需用户认证、会话管理
 - 无需数据库驱动或 ORM
+
+## Project Scoping & Phased Development
+
+### MVP Strategy & Philosophy
+
+**MVP 方式：** 问题解决型——用最少的功能让团队成员能浏览 BMAD 项目产出物，验证"看真实案例比听理论更有效"这一核心假设。
+
+**资源：** Lu 一人开发，前后端全栈。
+
+### MVP Feature Set (Phase 1)
+
+**支持的核心旅程：**
+- 旅程一（部署）：`go run` 启动，内网可访问
+- 旅程二~四（浏览）：按阶段导航、查看文档、查看命令映射
+
+**必须具备的能力：**
+1. Go 后端扫描 `_bmad-output/` 目录，解析 Markdown 文件并通过 API 返回
+2. Go 后端解析 `bmad-help.csv`，返回命令、代理角色、产出文件的映射数据
+3. Vue 前端渲染 BMAD 阶段列表导航
+4. Vue 前端渲染 Markdown 文档内容
+5. Vue 前端展示命令与产出映射页面
+6. Go embed 嵌入前端资源，单一可执行文件部署
+
+**明确排除（MVP 不做）：**
+- 用户登录/认证
+- 评论和反馈功能
+- 文档编辑功能
+- 数据库
+- 交互式流程图
+- Git 演进时间线
+
+### Post-MVP Features
+
+**Phase 2（Growth）：**
+- 交互式 BMAD 工作流程图导航（mermaid 或 d3）
+- 自适应双模式布局（全景概览↔文档详情）
+
+**Phase 3（Expansion）：**
+- 逆向追溯导航
+- Git 演进时间线与版本对比
+- Markdown 渲染后的 diff 视图
+- 评论反馈、多项目支持、学习路径引导
+
+### Risk Mitigation Strategy
+
+**技术风险：** 低。Vue 3 + Go 均为成熟技术栈，文件系统读取和 Markdown 解析都有现成库支持。最大技术挑战是 Go embed 嵌入前端资源的构建流程，可通过早期验证解决。
+
+**市场风险：** 低。用户是自己的团队，需求明确，无需市场验证。核心风险是团队成员"看了但没行动"——通过 Lu 的会议引导来弥补。
+
+**资源风险：** 一人开发，时间是主要约束。MVP 功能已精简到最小，优先保证核心浏览体验可用，避免过度设计。
