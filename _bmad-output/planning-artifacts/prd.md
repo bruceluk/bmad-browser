@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-02b-vision', 'step-02c-executive-summary', 'step-03-success', 'step-04-journeys', 'step-05-domain', 'step-06-innovation', 'step-07-project-type', 'step-08-scoping', 'step-09-functional']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/brainstorming/brainstorming-session-2026-03-13-1200.md']
 workflowType: 'prd'
 documentCounts:
@@ -242,3 +242,38 @@ BMAD Viewer 是一个面向团队的只读 Web 应用（Vue 3 + Golang），将 
 **市场风险：** 低。用户是自己的团队，需求明确，无需市场验证。核心风险是团队成员"看了但没行动"——通过 Lu 的会议引导来弥补。
 
 **资源风险：** 一人开发，时间是主要约束。MVP 功能已精简到最小，优先保证核心浏览体验可用，避免过度设计。
+
+## Functional Requirements
+
+### 文档浏览
+
+- FR1: 浏览者可以查看 `_bmad-output/` 目录下所有 Markdown 文档的渲染内容
+- FR2: 浏览者可以按 BMAD 阶段（分析、规划、架构、实施）分类浏览文档
+- FR3: 浏览者可以通过阶段列表导航在不同阶段间切换
+- FR4: 浏览者可以查看单个文档的完整渲染内容
+- FR5: 浏览者可以在文档间快速切换，无需重新加载页面
+
+### 命令与产出映射
+
+- FR6: 浏览者可以查看所有 BMAD 工作流命令的列表
+- FR7: 浏览者可以查看每个命令对应的 AI 代理角色名称和职责
+- FR8: 浏览者可以查看每个命令产出的文件列表
+- FR9: 浏览者可以从命令映射页面导航到对应的产出文档
+
+### 导航与信息架构
+
+- FR10: 浏览者可以在首页看到 BMAD 项目的整体结构概览
+- FR11: 浏览者可以通过导航菜单访问所有主要功能区域（文档浏览、命令映射）
+- FR12: 浏览者可以看到当前所在位置（面包屑或高亮导航项）
+
+### 部署与运行
+
+- FR13: 部署者可以通过 `go run` 单一命令启动应用
+- FR14: 应用启动后，同一内网的用户可以通过浏览器访问
+- FR15: 应用可以自动扫描指定目录下的文档，无需手动配置文件列表
+
+### 数据解析
+
+- FR16: 系统可以解析 Markdown 文件并提取 YAML frontmatter 元数据
+- FR17: 系统可以解析 `bmad-help.csv` 并提取工作流、命令、代理角色等字段
+- FR18: 系统可以根据目录结构自动推断文档所属的 BMAD 阶段
