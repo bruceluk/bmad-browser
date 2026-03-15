@@ -1,6 +1,6 @@
 # Story 1.2: Go 后端文档扫描与 API
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -20,47 +20,46 @@ so that 我可以通过浏览器获取文档数据。
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: 定义数据模型 (AC: #5, #7)
-  - [ ] 创建 `server/model/document.go`，定义 Document struct（Path、Title、Content、Frontmatter、Phase）
-  - [ ] JSON tag 使用 camelCase（如 `json:"path"`、`json:"frontmatter"`）
-  - [ ] 创建 DocumentSummary struct（Path、Title、Phase，不含 Content），用于列表 API
+- [x] Task 1: 定义数据模型 (AC: #5, #7)
+  - [x] 创建 `server/model/document.go`，定义 Document struct（Path、Title、Content、Frontmatter、Phase）
+  - [x] JSON tag 使用 camelCase（如 `json:"path"`、`json:"frontmatter"`）
+  - [x] 创建 DocumentSummary struct（Path、Title、Phase，不含 Content），用于列表 API
 
-- [ ] Task 2: 实现 Markdown 解析器 (AC: #2)
-  - [ ] 创建 `server/parser/markdown_parser.go`
-  - [ ] 实现 ParseMarkdown 函数：读取 .md 文件，分离 YAML frontmatter 和 Markdown 内容
-  - [ ] frontmatter 解析为 `map[string]interface{}`
-  - [ ] 从 frontmatter 或 Markdown 内容提取标题（优先 frontmatter 的 title 字段，否则取第一个 `# ` 标题）
-  - [ ] 需要引入 YAML 解析库（`gopkg.in/yaml.v3`）
+- [x] Task 2: 实现 Markdown 解析器 (AC: #2)
+  - [x] 创建 `server/parser/markdown_parser.go`
+  - [x] 实现 ParseMarkdown 函数：读取 .md 文件，分离 YAML frontmatter 和 Markdown 内容
+  - [x] frontmatter 解析为 `map[string]interface{}`
+  - [x] 从 frontmatter 或 Markdown 内容提取标题（优先 frontmatter 的 title 字段，否则取第一个 `# ` 标题）
+  - [x] 引入 YAML 解析库（`gopkg.in/yaml.v3` v3.0.1）
 
-- [ ] Task 3: 实现文件系统扫描器 (AC: #1, #3, #4)
-  - [ ] 创建 `server/parser/scanner.go`
-  - [ ] 实现 ScanDocuments 函数：递归扫描指定目录下所有 `.md` 文件
-  - [ ] 对每个文件调用 ParseMarkdown 解析
-  - [ ] 根据目录结构推断 BMAD 阶段（如 `brainstorming/` → 分析阶段，`planning-artifacts/` → 规划阶段）
-  - [ ] 返回 `[]Document` 缓存在内存中
-  - [ ] 支持通过命令行参数指定扫描目录路径（默认 `../_bmad-output`）
+- [x] Task 3: 实现文件系统扫描器 (AC: #1, #3, #4)
+  - [x] 创建 `server/parser/scanner.go`
+  - [x] 实现 ScanDocuments 函数：递归扫描指定目录下所有 `.md` 文件
+  - [x] 对每个文件调用 ParseMarkdown 解析
+  - [x] 根据目录结构推断 BMAD 阶段（brainstorming→analysis, planning→planning, implementation→implementation）
+  - [x] 返回 `[]Document` 缓存在内存中
+  - [x] 支持通过命令行参数 `-dir` 指定扫描目录路径（默认 `../_bmad-output`）
 
-- [ ] Task 4: 实现文档 API handler (AC: #5, #6, #7)
-  - [ ] 创建 `server/handler/documents.go`
-  - [ ] 实现 `GET /api/documents` handler：返回所有文档的 DocumentSummary 列表
-  - [ ] 实现 `GET /api/documents/:path` handler：根据 path 参数返回完整 Document
-  - [ ] 文档不存在时返回 404 `{"error": "document not found"}`
-  - [ ] Content-Type 设置为 `application/json`
-  - [ ] 注意：Go 标准库 `http.HandleFunc` 不直接支持路径参数，需用路径前缀匹配 + 手动提取
+- [x] Task 4: 实现文档 API handler (AC: #5, #6, #7)
+  - [x] 创建 `server/handler/documents.go`
+  - [x] 实现 `GET /api/documents` handler：返回所有文档的 DocumentSummary 列表
+  - [x] 实现 `GET /api/documents/:path` handler：用路径前缀匹配 + strings.TrimPrefix 提取路径参数
+  - [x] 文档不存在时返回 404 `{"error": "document not found"}`
+  - [x] Content-Type 设置为 `application/json`
 
-- [ ] Task 5: 集成到 main.go (AC: #1, #4)
-  - [ ] 修改 `server/main.go`：启动时调用 ScanDocuments 扫描文档目录
-  - [ ] 将扫描结果传递给 handler
-  - [ ] 添加命令行参数解析（`-port`、`-dir`）
-  - [ ] 保留 `/api/health` 端点
-  - [ ] 日志输出扫描到的文件数量
+- [x] Task 5: 集成到 main.go (AC: #1, #4)
+  - [x] 修改 `server/main.go`：启动时调用 ScanDocuments
+  - [x] 将扫描结果传递给 DocumentHandler
+  - [x] 添加命令行参数（`-port`、`-dir`）
+  - [x] 保留 `/api/health` 端点
+  - [x] 日志输出扫描到的文件数量（"Scanned 10 documents"）
 
-- [ ] Task 6: 验证 (AC: #1-#7)
-  - [ ] Go 编译成功
-  - [ ] 启动后日志显示扫描到的文件数量
-  - [ ] `curl /api/documents` 返回文档列表
-  - [ ] `curl /api/documents/planning-artifacts/prd.md` 返回完整文档（含 content 和 frontmatter）
-  - [ ] `curl /api/documents/nonexistent.md` 返回 404
+- [x] Task 6: 验证 (AC: #1-#7)
+  - [x] Go 编译成功
+  - [x] 启动后日志显示 "Scanned 10 documents from ../../_bmad-output"
+  - [x] `curl /api/documents` 返回 10 个文档的列表（JSON 数组）
+  - [x] `curl /api/documents/planning-artifacts/prd.md` 返回完整文档（title: "产品需求文档 - BMAD Viewer", 5720 chars content）
+  - [x] `curl /api/documents/nonexistent.md` 返回 404 `{"error":"document not found"}`
 
 ## Dev Notes
 
@@ -151,8 +150,32 @@ server/
 
 ### Agent Model Used
 
+Claude Opus 4.6 (1M context)
+
 ### Debug Log References
+
+- gopkg.in/yaml.v3 v3.0.1 安装成功
+- Go 标准库路由使用 HandleFunc 路径前缀匹配 + TrimPrefix 提取路径参数
 
 ### Completion Notes List
 
+- ✅ Document + DocumentSummary 数据模型定义完成，含 ToSummary 转换方法
+- ✅ Markdown 解析器实现：frontmatter 分离、YAML 解析、标题提取（frontmatter 优先，降级到 # 标题）
+- ✅ 文件扫描器实现：递归扫描 .md 文件、阶段推断、内存缓存
+- ✅ 文档 API handler：列表（无 content）和详情（含 content）两个端点
+- ✅ main.go 集成：启动时扫描、命令行参数（-port、-dir）、日志输出
+- ✅ 端到端验证通过：10 个文档扫描成功，列表 API、详情 API、404 均正常
+- ✅ 删除不再需要的 .gitkeep 占位文件
+
 ### File List
+
+- bmad-viewer/server/model/document.go (new)
+- bmad-viewer/server/parser/markdown_parser.go (new)
+- bmad-viewer/server/parser/scanner.go (new)
+- bmad-viewer/server/handler/documents.go (new)
+- bmad-viewer/server/main.go (modified)
+- bmad-viewer/server/go.mod (modified)
+- bmad-viewer/server/go.sum (new)
+- bmad-viewer/server/handler/.gitkeep (deleted)
+- bmad-viewer/server/parser/.gitkeep (deleted)
+- bmad-viewer/server/model/.gitkeep (deleted)
