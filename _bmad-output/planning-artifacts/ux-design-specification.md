@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -174,3 +174,30 @@ BMAD Viewer 是一个面向软件开发团队的只读 Web 应用，将 BMAD 方
 **避免：**
 - 不做 Notion 式的自由编辑能力——BMAD Viewer 是只读展示
 - 不做无限嵌套——保持浅层级，降低认知负担
+
+## Design System Foundation
+
+### Design System Choice
+
+**Tailwind CSS**（无组件库），纯 utility-first CSS 框架。
+
+### Rationale for Selection
+
+1. **视觉自由度最高**：BMAD Viewer 追求 Notion 式的简洁阅读体验，Tailwind 可以精确控制每个像素，不需要覆盖组件库的默认样式
+2. **UI 复杂度低**：核心 UI 只有侧边栏、内容区、面包屑、文档渲染，不需要表单、弹窗、表格等复杂组件，不值得引入重量级组件库
+3. **开发效率**：Tailwind 的 utility class 写法在简单 UI 场景下比组件库更快——直接写 class 即可，不需要查组件 API 文档
+4. **包体积小**：仅 Chrome 内网部署，Tailwind purge 后 CSS 极小，配合 Go embed 打包无负担
+
+### Implementation Approach
+
+- Vue 3 + Tailwind CSS 4
+- 自定义少量基础组件：侧边栏导航、面包屑、文档渲染容器、工作流卡片
+- Markdown 渲染使用专用库（如 markdown-it），配合 Tailwind Typography 插件优化排版
+- 所有样式通过 Tailwind utility classes 实现，不写自定义 CSS 文件
+
+### Customization Strategy
+
+- **排版**：使用 `@tailwindcss/typography` 插件，基于 Notion 风格调整 prose 样式（行间距、字号、颜色）
+- **色彩**：定义极简色板——主色用于导航高亮和角色标识，其余以灰度为主，保持阅读舒适
+- **间距**：大留白策略，内容区左右留出充足空间，避免文字贴边
+- **组件复用**：通过 Vue 组件封装常用 UI 模式（如工作流卡片），而非 Tailwind 的 @apply 抽象
