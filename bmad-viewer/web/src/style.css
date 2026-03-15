@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --border: #2a2a4a;
+  --text: #e0e0e0;
+  --text-secondary: #a0a0b0;
+  --dev: #4fc3f7;
+  --pm: #81c784;
+  --qa: #b39ddb;
+  --success: #66bb6a;
+  --warning: #ffa726;
+  --error: #ef5350;
+  --link: #64b5f6;
+}
+
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+code, pre {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
