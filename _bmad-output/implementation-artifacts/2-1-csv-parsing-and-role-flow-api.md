@@ -1,6 +1,6 @@
 # Story 2.1: CSV 解析与角色流程 API
 
-Status: review
+Status: done
 
 ## Story
 
