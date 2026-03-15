@@ -1,6 +1,6 @@
 # Story 1.1: 项目初始化与开发环境搭建
 
-Status: review
+Status: done
 
 ## Story
 
