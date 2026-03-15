@@ -64,8 +64,43 @@ This document provides the complete epic and story breakdown for BMAD Viewer, de
 
 ### FR Coverage Map
 
-{{requirements_coverage_map}}
+| FR | Epic | 说明 |
+|----|------|------|
+| FR1 | Epic 1 | 查看所有 Markdown 文档 |
+| FR2 | Epic 2 | 按阶段分类浏览 |
+| FR3 | Epic 2 | 阶段列表导航 |
+| FR4 | Epic 1 | 查看单个文档完整内容 |
+| FR5 | Epic 1 | 文档间切换无刷新 |
+| FR6 | Epic 3 | 查看工作流命令列表 |
+| FR7 | Epic 3 | 查看命令对应的代理角色 |
+| FR8 | Epic 3 | 查看命令产出文件 |
+| FR9 | Epic 3 | 从命令映射导航到产出文档 |
+| FR10 | Epic 2 | 首页结构概览 |
+| FR11 | Epic 2 | 导航菜单 |
+| FR12 | Epic 2 | 位置感知 |
+| FR13 | Epic 1 | `go run` 启动 |
+| FR14 | Epic 1 | 内网访问 |
+| FR15 | Epic 1 | 自动扫描文档 |
+| FR16 | Epic 1 | Markdown frontmatter 解析 |
+| FR17 | Epic 2 | CSV 解析 |
+| FR18 | Epic 2 | 阶段推断 |
+
+NFR1-NFR5 通过架构决策（内存缓存 + SPA + Go 标准库）整体满足，不单独分配到某个 Epic。
 
 ## Epic List
 
-{{epics_list}}
+### Epic 1: 项目基础与文档浏览
+用户可以通过 `go run` 启动应用，打开浏览器看到 BMAD 项目的文档列表，并阅读任意 Markdown 文档的渲染内容。
+**FRs covered:** FR1, FR4, FR5, FR13, FR14, FR15, FR16
+**Additional:** 项目初始化（create-vue + go mod init）、Go embed、Makefile、Vite 代理配置
+**UX-DRs:** UX-DR1（深色主题基础）、UX-DR7（DocRenderer）、UX-DR10（字体系统）
+
+### Epic 2: 角色导航与流程图
+用户打开首页看到三个角色入口，选择角色后看到该角色的线性工作流程图，每个节点显示步骤名称、命令、代理角色和预期时间。
+**FRs covered:** FR2, FR3, FR10, FR11, FR12, FR17, FR18
+**UX-DRs:** UX-DR2（RoleCard）、UX-DR3（RoleTab）、UX-DR4（FlowNode）、UX-DR5（FlowArrow）、UX-DR8（流程图优先布局）
+
+### Epic 3: 流程图与文档联动
+用户点击流程图节点，下方展示对应的产出文档和元信息。用户可以点击上下游虚线节点延伸到其他角色的流程。
+**FRs covered:** FR6, FR7, FR8, FR9
+**UX-DRs:** UX-DR6（DocMeta）、UX-DR9（上下游延伸交互）
