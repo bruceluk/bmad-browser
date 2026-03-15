@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -345,3 +345,38 @@ BMAD Viewer 是一个面向软件开发团队的只读 Web 应用，将 BMAD 方
 - 角色标识色在深色背景上对比度均 ≥ 3:1
 - 可交互元素有 hover/focus 状态变化
 - 流程节点点击区域 ≥ 44px（触控友好，虽然不做移动端但不影响桌面体验）
+
+## Design Direction Decision
+
+### Design Directions Explored
+
+通过 HTML 可视化展示对比了四种设计方向：
+1. 经典侧边栏——Notion 式固定侧边栏 + 内容区
+2. 流程图优先——流程图始终可见 + 下方文档面板
+3. 卡片式仪表盘——角色卡片 + 步骤卡片网格
+4. 极简阅读器——图标栏 + 可展开导航，最大化阅读面积
+
+### Chosen Direction
+
+**方向二：流程图优先**
+
+核心布局：
+- **上方区域**：角色 Tab 切换 + 线性流程图（始终可见）
+- **下方区域**：点击流程节点后展示对应的产出文档
+
+流程图节点包含：步骤名称、BMAD 命令、代理角色图标、预期时间。上下游节点以虚线弱化显示，暗示可延伸。
+
+### Design Rationale
+
+1. **流程全貌一目了然**：流程图始终可见，用户不需要在侧边栏和内容之间切换就能看到完整流程，直接回答"我的工作有哪几步"
+2. **上下游自然可见**：线性流程图天然展示前后关系，上游（PM）和下游（QA）节点用虚线弱化显示，延伸探索零成本
+3. **与核心体验完美匹配**：我们定义的核心体验是"选角色，看流程，读产出"——方向二的布局恰好是这个顺序：顶部选角色 → 中间看流程 → 下方读产出
+4. **难度和时间信息直接在流程图上**：每个节点标注命令和时间，用户扫一眼流程图就能回答"每步要干什么、花多久"
+
+### Implementation Approach
+
+- 页面分为上下两个区域，上方固定高度（流程图区），下方弹性高度（文档区）
+- 流程图使用 CSS Flexbox 布局，节点为 Vue 组件，支持点击交互和状态切换
+- 角色切换通过顶部 Tab 组件实现，切换时流程图节点和文档内容同步更新
+- 文档区内容居中限宽（800px），沿用 Notion 式排版风格
+- 上下游节点使用虚线边框 + 低透明度，点击可跳转到对应角色的流程图
