@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter', 'step-04-decisions', 'step-05-patterns']
+stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter', 'step-04-decisions', 'step-05-patterns', 'step-06-structure']
 inputDocuments: ['_bmad-output/planning-artifacts/prd.md', '_bmad-output/planning-artifacts/ux-design-specification.md', '_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md']
 workflowType: 'architecture'
 project_name: 'BMAD Viewer'
@@ -354,3 +354,118 @@ server/model/         # 数据结构定义
 4. 不引入未在架构文档中列出的第三方依赖
 5. 不添加数据库、认证、中间件等未规划的功能
 6. 前端不写 `<style>` 块，所有样式用 Tailwind utility classes
+
+## Project Structure & Boundaries
+
+### Complete Project Directory Structure
+
+```
+bmad-viewer/
+├── README.md
+├── Makefile                          # 统一构建：make dev / make build
+├── .gitignore
+│
+├── web/                              # Vue 3 前端
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── vite.config.ts                # Vite 配置（含 API 代理）
+│   ├── tailwind.config.js
+│   ├── src/
+│   │   ├── main.ts                   # 应用入口
+│   │   ├── App.vue                   # 根组件
+│   │   ├── style.css                 # Tailwind 入口（@tailwind 指令 + CSS 变量）
+│   │   ├── router/
+│   │   │   └── index.ts              # Vue Router 配置
+│   │   ├── views/
+│   │   │   ├── HomeView.vue          # 首页：角色选择
+│   │   │   └── FlowView.vue         # 流程图视图：流程图 + 文档区
+│   │   ├── components/
+│   │   │   ├── RoleCard.vue          # 首页角色卡片
+│   │   │   ├── RoleTab.vue           # 流程图视图角色 Tab
+│   │   │   ├── FlowNode.vue          # 流程图节点
+│   │   │   ├── FlowArrow.vue         # 流程图箭头
+│   │   │   ├── DocMeta.vue           # 文档元信息（命令、代理、时间）
+│   │   │   └── DocRenderer.vue       # Markdown 文档渲染
+│   │   ├── api/
+│   │   │   └── client.ts             # API 调用封装（fetch wrapper）
+│   │   └── types/
+│   │       └── index.ts              # TypeScript 类型定义（与 Go model 对应）
+│   └── public/
+│       └── favicon.ico
+│
+└── server/                           # Go 后端
+    ├── go.mod
+    ├── go.sum
+    ├── main.go                       # 入口：解析参数、初始化缓存、启动 HTTP server
+    ├── embed.go                      # //go:embed web/dist 前端资源嵌入
+    ├── handler/
+    │   ├── roles.go                  # GET /api/roles
+    │   ├── documents.go              # GET /api/documents/:path
+    │   ├── workflows.go              # GET /api/workflows
+    │   └── static.go                 # 前端静态资源服务
+    ├── parser/
+    │   ├── csv_parser.go             # bmad-help.csv 解析
+    │   ├── markdown_parser.go        # Markdown frontmatter 解析
+    │   └── scanner.go                # 文件系统扫描 + 内存缓存构建
+    └── model/
+        ├── workflow.go               # WorkflowStep, RoleFlow 结构体
+        └── document.go               # Document 结构体
+```
+
+### Architectural Boundaries
+
+**API 边界：**
+- 前端 ←→ 后端：通过 3 个 REST API 端点通信
+- 后端 ←→ 文件系统：仅在启动时读取，运行时不再访问
+- 无外部服务集成
+
+**前端组件边界：**
+- `HomeView` 管理角色选择状态，通过路由跳转传递角色参数
+- `FlowView` 管理流程图状态（当前角色、当前节点、已浏览节点），向下传递给子组件
+- 子组件（FlowNode、DocRenderer 等）为纯展示组件，通过 props 接收数据、通过 emit 触发事件
+
+**后端层级边界：**
+- `handler/` 只负责 HTTP 请求/响应，调用 `parser/` 获取数据
+- `parser/` 负责数据解析和缓存，不关心 HTTP
+- `model/` 只定义数据结构，无业务逻辑
+
+### Requirements to Structure Mapping
+
+**FR1-FR5（文档浏览）：**
+- `server/parser/scanner.go` — 扫描文档目录
+- `server/parser/markdown_parser.go` — 解析 Markdown
+- `server/handler/documents.go` — 提供文档 API
+- `web/src/components/DocRenderer.vue` — 渲染文档
+- `web/src/components/DocMeta.vue` — 展示元信息
+
+**FR6-FR9（命令与产出映射）：**
+- `server/parser/csv_parser.go` — 解析 bmad-help.csv
+- `server/handler/workflows.go` — 提供工作流 API
+- `web/src/components/FlowNode.vue` — 展示命令和代理信息
+
+**FR10-FR12（导航与信息架构）：**
+- `web/src/views/HomeView.vue` — 首页角色入口
+- `web/src/views/FlowView.vue` — 流程图导航
+- `web/src/components/RoleTab.vue` — 角色切换
+- `web/src/router/index.ts` — 路由配置
+
+**FR13-FR15（部署与运行）：**
+- `server/main.go` — 服务启动
+- `server/embed.go` — 前端资源嵌入
+- `Makefile` — 构建流程
+
+**FR16-FR18（数据解析）：**
+- `server/parser/markdown_parser.go` — frontmatter 解析
+- `server/parser/csv_parser.go` — CSV 解析
+- `server/parser/scanner.go` — 阶段推断
+
+### Data Flow
+
+```
+启动时：
+文件系统 → scanner.go（扫描）→ csv_parser.go + markdown_parser.go（解析）→ 内存缓存（model struct）
+
+运行时：
+浏览器请求 → handler/ → 内存缓存 → JSON 响应 → Vue 前端渲染
+```
