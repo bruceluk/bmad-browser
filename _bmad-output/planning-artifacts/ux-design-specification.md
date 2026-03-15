@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys', 'step-11-component-strategy']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys', 'step-11-component-strategy', 'step-12-ux-patterns']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -579,3 +579,71 @@ Tailwind CSS 为 utility-first 框架，不提供现成 UI 组件。所有组件
 | 5 | RoleCard | RoleTab（首页入口跳转到流程图视图） |
 
 组件总数 6 个，UI 复杂度低，无需分阶段交付，MVP 一次性实现。
+
+## UX Consistency Patterns
+
+### Navigation Patterns
+
+**角色切换：**
+- 点击角色 Tab，流程图和文档区同步切换，无过渡动画，即时响应
+- 当前角色 Tab 使用角色色背景高亮，其他 Tab 灰色
+
+**节点选择：**
+- 点击流程节点，该节点高亮，下方文档区更新内容
+- 同一时间只有一个节点处于激活状态
+- 再次点击同一节点不做操作
+
+**上下游延伸：**
+- 点击虚线节点，自动切换到对应角色 Tab 并激活该节点
+- 切换后流程图滚动到该节点位置（如果超出可视区域）
+
+**首页返回：**
+- 流程图视图提供返回首页的入口（左上角 BMAD Viewer 标题可点击）
+
+### State Patterns
+
+**加载状态：**
+- 数据请求时鼠标光标变为 `cursor: wait`，无其他加载指示
+- 内网环境响应速度快，不做骨架屏或 loading 动画
+
+**已浏览标记：**
+- 点击过的流程节点降低至 40% 透明度（角色色）
+- 已浏览状态存储在页面级状态中，刷新页面后重置（无需持久化）
+
+**空状态：**
+- 进入流程图视图但未选中任何节点时，文档区显示简短提示："点击上方流程节点查看详情"
+- 文字居中，灰色，不喧宾夺主
+
+**无文档状态：**
+- 如果某个流程节点没有对应的产出文档，文档区显示："该步骤暂无产出文档"
+
+### Interaction Feedback Patterns
+
+**Hover 效果：**
+- 流程节点：边框变为角色色 + 上浮 2px（`transform: translateY(-2px)`）
+- 角色卡片（首页）：上浮 4px + 角色色边框发光（`box-shadow`）
+- 角色 Tab：边框变为角色色
+- 所有 hover 过渡时间：150ms ease
+
+**点击反馈：**
+- 流程节点：即时切换到激活状态（角色色边框 + 背景），无点击动画
+- 角色 Tab：即时切换高亮，无动画
+
+**文档区过渡：**
+- 文档内容切换时无动画，直接替换内容
+- 切换后文档区自动滚动到顶部
+
+### Visual Consistency Rules
+
+**圆角：**
+- 卡片/节点：12px
+- Tab/徽章：6px（小元素用小圆角）
+- 代码块：4px
+
+**阴影：**
+- 仅在 hover 状态使用阴影（角色色 glow），默认状态无阴影
+- 深色主题下阴影不明显，用边框色变化代替层级感
+
+**过渡：**
+- 所有交互过渡统一 150ms ease
+- 不使用弹跳、回弹等花哨动画
