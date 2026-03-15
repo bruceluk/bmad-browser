@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter', 'step-04-decisions']
+stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter', 'step-04-decisions', 'step-05-patterns']
 inputDocuments: ['_bmad-output/planning-artifacts/prd.md', '_bmad-output/planning-artifacts/ux-design-specification.md', '_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md']
 workflowType: 'architecture'
 project_name: 'BMAD Viewer'
@@ -273,3 +273,84 @@ type Document struct {
 - 前端 TypeScript 类型需与 Go 数据模型对应（手动保持一致）
 - CSV 解析逻辑决定了角色-流程映射的数据结构，前后端共享理解
 - Markdown 渲染在前端完成，后端只提供原始内容
+
+## Implementation Patterns & Consistency Rules
+
+### Naming Patterns
+
+**Go 代码（server/）：**
+- 变量/函数：`camelCase`（未导出）、`PascalCase`（导出）
+- 文件名：`snake_case.go`（如 `csv_parser.go`、`role_handler.go`）
+- 包名：小写单词（如 `handler`、`parser`、`model`）
+
+**Vue/TypeScript 代码（web/）：**
+- 组件文件：`PascalCase.vue`（如 `FlowNode.vue`、`RoleCard.vue`）
+- TypeScript 文件：`camelCase.ts`（如 `apiClient.ts`）
+- 类型/接口：`PascalCase`（如 `RoleFlow`、`WorkflowStep`）
+- 变量/函数：`camelCase`（如 `currentRole`、`fetchRoles`）
+- CSS 类名：Tailwind utility classes，无自定义类名
+
+**API：**
+- 端点路径：`/api/kebab-case`（如 `/api/roles`、`/api/documents`）
+- JSON 字段：`camelCase`（Go struct 通过 `json:"camelCase"` tag 转换）
+
+### Format Patterns
+
+**API 响应格式：**
+- 成功时直接返回数据，不包装：
+```json
+// 数组响应
+[{"role": "developer", "steps": [...]}]
+
+// 对象响应
+{"path": "...", "title": "...", "content": "..."}
+```
+- 错误时返回统一结构：
+```json
+{"error": "document not found"}
+```
+- HTTP 状态码：200（成功）、404（资源不存在）、500（服务器错误）
+
+**日期格式：** ISO 8601 字符串（如 `"2026-03-15"`）
+
+### Structure Patterns
+
+**组件组织：** 按类型（已在项目结构中确定）
+```
+web/src/components/   # 所有 Vue 组件平铺
+web/src/views/        # 页面级视图
+web/src/api/          # API 调用封装
+web/src/types/        # TypeScript 类型定义
+```
+
+**后端组织：** 按职责
+```
+server/handler/       # HTTP 路由处理函数
+server/parser/        # 数据解析（CSV、Markdown）
+server/model/         # 数据结构定义
+```
+
+**测试位置：** 与源文件同目录
+- Go：`handler/role_handler_test.go`
+- Vue：`components/__tests__/FlowNode.test.ts`（如需要）
+
+### Process Patterns
+
+**错误处理：**
+- Go：函数返回 `(result, error)`，handler 层统一转为 HTTP 错误响应
+- Vue：API 调用使用 `try/catch`，错误信息输出到 `console.error`
+- 不做全局错误弹窗（只读应用，错误场景极少）
+
+**加载状态：**
+- 鼠标光标 `cursor: wait`，无其他加载指示
+- 状态变量命名：`isLoading`（布尔值）
+
+### Enforcement Guidelines
+
+**所有 AI 代理必须遵守：**
+1. Go 文件用 `snake_case`，Vue 组件用 `PascalCase`
+2. API 响应直接返回数据，不加包装层
+3. JSON 字段用 `camelCase`
+4. 不引入未在架构文档中列出的第三方依赖
+5. 不添加数据库、认证、中间件等未规划的功能
+6. 前端不写 `<style>` 块，所有样式用 Tailwind utility classes
