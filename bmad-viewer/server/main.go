@@ -21,13 +21,16 @@ func main() {
 	// Document API handler
 	docHandler := handler.NewDocumentHandler(docs)
 
-	// Routes
+	// API routes (registered first, take priority)
 	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	})
 	http.HandleFunc("/api/documents/", docHandler.HandleGet)
 	http.HandleFunc("/api/documents", docHandler.HandleList)
+
+	// Static file handler with SPA fallback (default route)
+	http.HandleFunc("/", handler.NewStaticHandler(webDistFS))
 
 	log.Printf("BMAD Viewer server starting on :%s", *port)
 	log.Fatal(http.ListenAndServe(":"+*port, nil))

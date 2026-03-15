@@ -1,4 +1,4 @@
-.PHONY: dev build clean
+.PHONY: dev build run clean
 
 dev:
 	@echo "Starting dev servers..."
@@ -8,7 +8,12 @@ dev:
 
 build:
 	cd web && npm run build
+	rm -rf server/dist
+	cp -r web/dist server/dist
 	cd server && go build -o ../bmad-viewer .
 
+run: build
+	./bmad-viewer
+
 clean:
-	rm -rf web/dist bmad-viewer
+	rm -rf web/dist server/dist bmad-viewer
