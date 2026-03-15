@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter']
+stepsCompleted: ['step-01-init', 'step-02-context', 'step-03-starter', 'step-04-decisions']
 inputDocuments: ['_bmad-output/planning-artifacts/prd.md', '_bmad-output/planning-artifacts/ux-design-specification.md', '_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md']
 workflowType: 'architecture'
 project_name: 'BMAD Viewer'
@@ -146,3 +146,130 @@ bmad-viewer/
 - 开发时前后端分别启动：Vite dev server（前端）+ `go run`（后端）
 - Vite 代理 API 请求到 Go 后端，避免跨域
 - 生产时合并为单一可执行文件
+
+## Core Architectural Decisions
+
+### Decision Priority Analysis
+
+**Critical Decisions (Block Implementation):**
+1. 数据架构：文件系统 + 启动时内存缓存
+2. API 设计：3 个 REST 端点
+3. 前端状态管理：Vue 响应式 API
+
+**Deferred Decisions (Post-MVP):**
+- 文件变更监听（热更新缓存）——MVP 重启即可刷新
+- API 分页——文档数量少，不需要
+
+### Data Architecture
+
+**数据源：** 文件系统（`_bmad-output/` 目录 + `bmad-help.csv`）
+
+**缓存策略：** 启动时一次性扫描
+- Go 服务启动时扫描 `_bmad-output/` 目录，解析所有 Markdown 文件的 frontmatter
+- 同时解析 `bmad-help.csv`，构建工作流数据结构
+- 所有数据缓存到内存中的 Go struct
+- 运行期间不再读取文件系统，所有 API 请求从内存返回
+- 文件变更需重启服务生效（MVP 足够）
+
+**数据模型：**
+```go
+// 工作流步骤
+type WorkflowStep struct {
+    Name        string   // 步骤名称
+    Code        string   // 步骤代码
+    Command     string   // BMAD 命令
+    AgentName   string   // 代理名称
+    AgentIcon   string   // 代理图标
+    Phase       string   // 所属阶段
+    Required    bool     // 是否必需
+    Description string   // 描述
+    Outputs     []string // 产出文件
+    Duration    string   // 预期时间
+}
+
+// 角色流程
+type RoleFlow struct {
+    Role      string         // 角色名称（开发者/PM/测试）
+    Steps     []WorkflowStep // 该角色的流程步骤
+    Upstream  []WorkflowStep // 上游步骤（其他角色）
+    Downstream []WorkflowStep // 下游步骤（其他角色）
+}
+
+// 文档
+type Document struct {
+    Path        string            // 文件路径
+    Title       string            // 文档标题
+    Content     string            // Markdown 原始内容
+    Frontmatter map[string]interface{} // YAML frontmatter
+    Phase       string            // 所属 BMAD 阶段
+}
+```
+
+### Authentication & Security
+
+**不适用。** 只读、内网、无用户认证、无会话管理。
+
+### API & Communication Patterns
+
+**API 风格：** REST，JSON 响应
+
+**端点设计：**
+
+| 端点 | 方法 | 说明 | 响应 |
+|------|------|------|------|
+| `/api/roles` | GET | 返回角色列表和对应的流程步骤 | `RoleFlow[]` |
+| `/api/documents/:path` | GET | 返回指定文档的内容和元数据 | `Document` |
+| `/api/workflows` | GET | 返回 CSV 解析后的完整工作流数据 | `WorkflowStep[]` |
+
+**错误处理：**
+- 404：文档不存在
+- 500：服务器内部错误
+- 无需 401/403（无认证）
+
+**CORS：** 开发环境需要（Vite dev server 跨域请求 Go 后端），生产环境不需要（同源）
+
+### Frontend Architecture
+
+**状态管理：** Vue 响应式 API（ref/reactive），无 Pinia
+- `currentRole: ref<string>` — 当前选中角色
+- `currentNode: ref<string>` — 当前选中流程节点
+- `visitedNodes: ref<Set<string>>` — 已浏览节点集合
+- `roles: ref<RoleFlow[]>` — 从 API 获取的角色流程数据
+
+**路由：** Vue Router
+- `/` — 首页（角色选择）
+- `/flow/:role` — 流程图视图（带角色参数）
+- `/flow/:role/:step` — 流程图视图 + 选中节点
+
+**Markdown 渲染：** 前端使用 markdown-it 库将 Markdown 转为 HTML，配合 Tailwind Typography 样式
+
+### Infrastructure & Deployment
+
+**部署方式：** 单一可执行文件
+- `make build` → 前端构建（Vite）→ Go embed 嵌入 → `go build` → 单一二进制文件
+- 部署：拷贝二进制文件到服务器 → `./bmad-viewer` 启动
+- 或直接在源码目录 `go run ./server` 启动（需先构建前端）
+
+**环境配置：**
+- 命令行参数或环境变量指定：端口号（默认 8080）、`_bmad-output/` 目录路径、`bmad-help.csv` 路径
+- 无需配置文件
+
+**监控与日志：**
+- Go 标准库 `log` 包，输出到 stdout
+- 记录：启动信息、扫描文件数量、API 请求日志
+- 无需专业监控工具
+
+### Decision Impact Analysis
+
+**Implementation Sequence:**
+1. Go 数据模型定义（model/）
+2. CSV 解析器 + Markdown 解析器（parser/）
+3. 启动时扫描和内存缓存
+4. REST API 端点（handler/）
+5. Vue 前端组件和路由
+6. Go embed 集成和构建流程
+
+**Cross-Component Dependencies:**
+- 前端 TypeScript 类型需与 Go 数据模型对应（手动保持一致）
+- CSV 解析逻辑决定了角色-流程映射的数据结构，前后端共享理解
+- Markdown 渲染在前端完成，后端只提供原始内容
