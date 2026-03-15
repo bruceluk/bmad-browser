@@ -1,5 +1,6 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys', 'step-11-component-strategy', 'step-12-ux-patterns']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys', 'step-11-component-strategy', 'step-12-ux-patterns', 'step-13-responsive-accessibility', 'step-14-complete']
+workflow_completed: true
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -647,3 +648,48 @@ Tailwind CSS 为 utility-first 框架，不提供现成 UI 组件。所有组件
 **过渡：**
 - 所有交互过渡统一 150ms ease
 - 不使用弹跳、回弹等花哨动画
+
+## Responsive Design & Accessibility
+
+### Responsive Strategy
+
+**仅桌面端，不做响应式设计。**
+
+- 目标设备：桌面电脑，最小支持宽度 1280px
+- 不考虑平板和手机
+- 流程图区域和文档区域基于固定桌面布局优化
+
+**大屏适配：**
+- 文档区内容居中限宽 800px，大屏幕下两侧留白自动增加
+- 流程图区域居中展示，节点间距不随屏幕宽度变化
+
+### Breakpoint Strategy
+
+**不使用断点。** 单一桌面布局，无媒体查询。
+
+最小支持宽度 1280px，低于此宽度不做适配（内网桌面环境不会出现更小屏幕）。
+
+### Accessibility Strategy
+
+**PRD 明确排除无障碍性要求。** 内部团队工具，用户群体已知且无特殊需求。
+
+**基础可用性保障（非 WCAG 合规，仅基本体验）：**
+- 文字对比度已在视觉基础中保证 ≥ 4.5:1
+- 可交互元素有 hover 状态变化
+- 语义化 HTML 标签（nav、main、article），便于代码可读性
+
+### Testing Strategy
+
+**浏览器：** 仅 Chrome 最新稳定版
+
+**测试内容：**
+- 流程图节点点击和文档区切换正常
+- 角色 Tab 切换正常
+- Markdown 文档渲染正确（标题、列表、代码块、表格）
+- 上下游节点延伸跳转正常
+
+### Implementation Guidelines
+
+- 不使用媒体查询和响应式 Tailwind 前缀（sm:、md:、lg:）
+- 布局使用固定宽度 + 居中，不使用百分比宽度
+- 所有组件按桌面端设计实现，无需考虑触控适配
