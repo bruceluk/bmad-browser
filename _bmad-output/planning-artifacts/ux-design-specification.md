@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation', 'step-09-design-directions', 'step-10-user-journeys', 'step-11-component-strategy']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -495,3 +495,87 @@ flowchart TD
 2. **首屏信息充足**：进入流程图视图后，用户不需要滚动就能看到完整流程图和节点元信息
 3. **文档摘要前置**：点击节点后，文档区首先展示摘要（做什么+命令+时间+难度），用户可以选择是否继续阅读全文
 4. **返回路径清晰**：流程图始终可见，用户随时可以点击其他节点或切换角色，不需要"返回"按钮
+
+## Component Strategy
+
+### Design System Components
+
+Tailwind CSS 为 utility-first 框架，不提供现成 UI 组件。所有组件均为自建 Vue 组件，使用 Tailwind utility classes 实现样式。
+
+### Custom Components
+
+#### RoleCard — 角色卡片
+
+**用途：** 首页角色入口，用户点击进入对应流程图视图
+**内容：** 角色图标、角色名称、一句话说明、步骤数量、总预期时间
+**状态：** 默认、hover（上浮 + 角色色边框发光）
+**交互：** 点击跳转到流程图视图，传入角色参数
+
+#### RoleTab — 角色 Tab
+
+**用途：** 流程图视图顶部的角色切换
+**内容：** 角色图标 + 角色名称
+**状态：** 默认（灰色边框）、激活（角色色背景 + 边框）
+**交互：** 点击切换流程图内容和文档区
+
+#### FlowNode — 流程节点
+
+**用途：** 流程图中的每个工作流步骤
+**内容：** 步骤图标、步骤名称、BMAD 命令（等宽字体）、预期时间
+**状态：**
+- 默认：`var(--border)` 边框
+- hover：角色色边框 + 上浮 2px
+- 激活（当前选中）：角色色边框 + 角色色背景透明度 8%
+- 已浏览：角色色边框 40% 透明度
+- 上下游（其他角色）：虚线边框 + 整体 40% 透明度
+**交互：** 点击切换下方文档区内容；点击上下游节点自动切换角色 Tab
+
+#### FlowArrow — 流程箭头
+
+**用途：** 连接流程节点，表示步骤顺序
+**内容：** 箭头符号 `→`
+**状态：** 角色色（当前角色流程内）、灰色（上下游连接）
+
+#### DocMeta — 文档元信息
+
+**用途：** 文档区顶部，展示当前步骤的元信息
+**内容：** 代理角色徽章（图标+名称，角色色背景）、BMAD 命令（等宽字体代码样式）、预期时间徽章（警告色）、难度徽章（成功色）
+**布局：** 水平排列，flex wrap
+
+#### DocRenderer — 文档渲染器
+
+**用途：** 渲染 Markdown 产出文档
+**内容：** Markdown 转 HTML 后的富文本内容
+**样式：** 基于 `@tailwindcss/typography` 的 prose 样式，深色主题适配
+**特性：**
+- 标题层级（h1-h3）使用定义的字号系统
+- 代码块语法高亮（等宽字体 + 深色背景）
+- 表格、列表、引用块的深色主题样式
+- 无目录导航，纯内容滚动
+
+### Component Implementation Strategy
+
+**原则：**
+- 每个组件一个 `.vue` 文件，使用 `<script setup>` + TypeScript
+- 样式全部通过 Tailwind utility classes，不写 `<style>` 块
+- 组件 props 定义清晰的类型接口
+- 状态管理通过 Vue 响应式 API（ref/reactive），无需 Pinia（应用状态简单）
+
+**数据流：**
+- 角色和流程数据从后端 API 获取（解析 `bmad-help.csv`）
+- 文档内容从后端 API 获取（读取 Markdown 文件）
+- 当前角色、当前节点、已浏览节点列表作为页面级状态管理
+
+### Implementation Roadmap
+
+**MVP 全部组件（一次交付）：**
+
+| 优先级 | 组件 | 依赖 |
+|--------|------|------|
+| 1 | DocRenderer | 无（核心渲染能力） |
+| 2 | FlowNode + FlowArrow | 无（核心交互） |
+| 3 | RoleTab | FlowNode（切换流程图） |
+| 4 | DocMeta | 无（信息展示） |
+| 5 | RoleCard | RoleTab（首页入口跳转到流程图视图） |
+
+组件总数 6 个，UI 复杂度低，无需分阶段交付，MVP 一次性实现。
