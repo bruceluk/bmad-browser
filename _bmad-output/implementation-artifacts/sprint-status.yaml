@@ -52,7 +52,7 @@ development_status:
 
   # Epic 2: 角色导航与流程图
   epic-2: in-progress
-  2-1-csv-parsing-and-role-flow-api: ready-for-dev
+  2-1-csv-parsing-and-role-flow-api: review
   2-2-homepage-role-selection: backlog
   2-3-flowchart-view-and-node-display: backlog
   epic-2-retrospective: optional

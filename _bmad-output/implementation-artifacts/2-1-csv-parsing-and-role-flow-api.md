@@ -1,6 +1,6 @@
 # Story 2.1: CSV 解析与角色流程 API
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -19,45 +19,41 @@ so that 前端可以展示每个角色的工作流程图。
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: 定义工作流数据模型 (AC: #2, #5)
-  - [ ] 创建 `server/model/workflow.go`
-  - [ ] 定义 WorkflowStep struct（Name, Code, Command, AgentName, AgentIcon, Phase, Required, Description, Outputs, Duration）
-  - [ ] 定义 RoleFlow struct（Role, RoleColor, Steps, Upstream, Downstream）
-  - [ ] JSON tag 使用 camelCase
+- [x] Task 1: 定义工作流数据模型 (AC: #2, #5)
+  - [x] 创建 `server/model/workflow.go`：WorkflowStep（含 Sequence 字段）+ RoleFlow（含 Label 字段）
+  - [x] JSON tag 使用 camelCase
 
-- [ ] Task 2: 实现 CSV 解析器 (AC: #1)
-  - [ ] 创建 `server/parser/csv_parser.go`
-  - [ ] 实现 ParseCSV 函数：读取 bmad-help.csv，解析为 []WorkflowStep
-  - [ ] 使用 Go 标准库 `encoding/csv`，不引入第三方库
-  - [ ] CSV header 行跳过，按列索引映射字段
-  - [ ] 支持通过命令行参数指定 CSV 文件路径（默认 `../_bmad/_config/bmad-help.csv`）
+- [x] Task 2: 实现 CSV 解析器 (AC: #1)
+  - [x] 创建 `server/parser/csv_parser.go`：ParseCSV 函数
+  - [x] Go 标准库 encoding/csv + LazyQuotes（CSV 含裸引号）
+  - [x] 仅解析 module=bmm 的行，跳过 header
+  - [x] 命令行参数 -csv 指定路径
 
-- [ ] Task 3: 实现角色-流程映射逻辑 (AC: #2, #3)
-  - [ ] 在 `server/parser/csv_parser.go` 中添加 BuildRoleFlows 函数
-  - [ ] 角色定义和映射规则（详见 Dev Notes）
-  - [ ] 每个角色的核心步骤按 phase + sequence 排序
-  - [ ] 上游/下游步骤从其他角色的流程中提取相关步骤
+- [x] Task 3: 实现角色-流程映射逻辑 (AC: #2, #3)
+  - [x] BuildRoleFlows：按 isPMStep/isDevStep/isQAStep 分类
+  - [x] 开发者：3-solutioning + 4-implementation（排除 QA/SM/Retrospective）
+  - [x] PM：1-analysis + 2-planning
+  - [x] QA：name 或 agent 含 "qa"
+  - [x] 上下游：lastN/firstN 取相邻角色的首尾步骤
+  - [x] 按 sequence 排序
 
-- [ ] Task 4: 实现工作流 API handler (AC: #5, #6)
-  - [ ] 创建 `server/handler/workflows.go`
-  - [ ] 实现 `GET /api/roles` handler：返回 []RoleFlow
-  - [ ] 实现 `GET /api/workflows` handler：返回 []WorkflowStep（完整列表）
+- [x] Task 4: 实现工作流 API handler (AC: #5, #6)
+  - [x] `server/handler/workflows.go`：HandleRoles + HandleWorkflows
 
-- [ ] Task 5: 集成到 main.go (AC: #1, #4)
-  - [ ] 修改 main.go：添加 -csv 命令行参数
-  - [ ] 启动时调用 ParseCSV + BuildRoleFlows
-  - [ ] 注册 /api/roles 和 /api/workflows 路由
-  - [ ] 日志输出解析到的工作流数量和角色数量
+- [x] Task 5: 集成到 main.go (AC: #1, #4)
+  - [x] 添加 -csv 参数，启动时 ParseCSV + BuildRoleFlows
+  - [x] 注册 /api/roles 和 /api/workflows
+  - [x] 日志：31 BMM workflow steps, 3 role flows
 
-- [ ] Task 6: 更新前端类型定义 (AC: #5)
-  - [ ] 在 `web/src/types/index.ts` 添加 WorkflowStep 和 RoleFlow 接口
-  - [ ] 在 `web/src/api/client.ts` 添加 fetchRoles() 和 fetchWorkflows() 函数
+- [x] Task 6: 更新前端类型定义 (AC: #5)
+  - [x] types/index.ts：WorkflowStep + RoleFlow 接口
+  - [x] api/client.ts：fetchRoles() + fetchWorkflows()
 
-- [ ] Task 7: 验证 (AC: #1-#6)
-  - [ ] Go 编译成功
-  - [ ] `curl /api/workflows` 返回工作流列表
-  - [ ] `curl /api/roles` 返回 3 个角色，每个角色有核心步骤、上游和下游
-  - [ ] 前端 TypeScript 类型检查通过
+- [x] Task 7: 验证 (AC: #1-#6)
+  - [x] Go 编译成功
+  - [x] /api/workflows 返回 31 个工作流
+  - [x] /api/roles 返回 3 角色：开发者(7步+2上游+1下游)、PM(9步+0+2)、QA(1步+2+0)
+  - [x] 前端 TypeScript 类型检查通过
 
 ## Dev Notes
 
@@ -173,8 +169,27 @@ web/src/
 
 ### Agent Model Used
 
+Claude Opus 4.6 (1M context)
+
 ### Debug Log References
+
+- CSV LazyQuotes 修复：bmad-help.csv 第 59 行含裸引号，标准解析失败，启用 LazyQuotes
+- estimateDuration 基于步骤名称硬编码预估时间（CSV 无此字段）
 
 ### Completion Notes List
 
+- ✅ WorkflowStep + RoleFlow 数据模型（含 Sequence 排序字段和 Label 中文标签）
+- ✅ CSV 解析器：31 个 BMM 工作流步骤，LazyQuotes 处理特殊字符
+- ✅ 角色映射：3 角色分类逻辑 + 上下游关系 + 按 sequence 排序
+- ✅ API handler：/api/roles 和 /api/workflows
+- ✅ 前端类型和 API 客户端同步更新
+- ✅ 端到端验证通过
+
 ### File List
+
+- bmad-viewer/server/model/workflow.go (new)
+- bmad-viewer/server/parser/csv_parser.go (new)
+- bmad-viewer/server/handler/workflows.go (new)
+- bmad-viewer/server/main.go (modified)
+- bmad-viewer/web/src/types/index.ts (modified)
+- bmad-viewer/web/src/api/client.ts (modified)

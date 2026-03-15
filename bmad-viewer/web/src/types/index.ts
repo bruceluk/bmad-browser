@@ -11,3 +11,26 @@ export interface DocumentSummary {
   title: string
   phase: string
 }
+
+export interface WorkflowStep {
+  name: string
+  code: string
+  command: string
+  agentName: string
+  agentIcon: string
+  phase: string
+  required: boolean
+  description: string
+  outputs: string[]
+  duration: string
+  sequence: number
+}
+
+export interface RoleFlow {
+  role: string
+  roleColor: string
+  label: string
+  steps: WorkflowStep[]
+  upstream: WorkflowStep[]
+  downstream: WorkflowStep[]
+}
