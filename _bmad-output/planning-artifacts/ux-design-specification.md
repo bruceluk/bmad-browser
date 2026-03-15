@@ -1,5 +1,5 @@
 ---
-stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience']
+stepsCompleted: ['step-01-init', 'step-02-discovery', 'step-03-core-experience', 'step-04-emotional-response', 'step-05-inspiration', 'step-06-design-system', 'step-07-defining-experience', 'step-08-visual-foundation']
 inputDocuments: ['_bmad-output/planning-artifacts/product-brief-bamd-2026-03-13.md', '_bmad-output/planning-artifacts/prd.md']
 ---
 
@@ -269,3 +269,79 @@ BMAD Viewer 是一个面向软件开发团队的只读 Web 应用，将 BMAD 方
 - 用户浏览完自己角色的所有步骤后，流程图显示完整状态
 - 上下游延伸入口明确可见："查看上游（PM 如何产出需求）"或"查看下游（测试如何验收）"
 - 用户可以随时回到角色选择页面切换视角
+
+## Visual Design Foundation
+
+### Color System
+
+**主题：** 深色主题（Dark Theme）
+
+**基础色：**
+- 背景色：`#1a1a2e`（深蓝黑）——比纯黑更有层次感，长时间阅读不刺眼
+- 表面色：`#16213e`（深蓝灰）——用于侧边栏、卡片等浮层
+- 边框色：`#2a2a4a`（暗紫灰）——微妙的层级分隔
+- 文字主色：`#e0e0e0`（浅灰白）——深色背景上的舒适阅读色
+- 文字次色：`#a0a0b0`（灰色）——辅助信息、次要文字
+
+**角色标识色（三色系）：**
+- **开发者**：`#4fc3f7`（天蓝）——技术感、冷静、熟悉的"代码蓝"
+- **产品经理**：`#81c784`（草绿）——成长、规划、产品生命力
+- **测试人员**：`#b39ddb`（淡紫）——质量、严谨、与蓝绿形成互补
+
+**语义色：**
+- 成功/已完成：`#66bb6a`
+- 警告/进行中：`#ffa726`
+- 错误：`#ef5350`
+- 链接/可交互：`#64b5f6`
+
+**流程节点色：**
+- 当前步骤：角色标识色（全亮度）
+- 已浏览步骤：角色标识色（降至 40% 透明度）
+- 未浏览步骤：`#404060`（暗灰）
+
+### Typography System
+
+**中文主字体：** `"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`
+- 系统原生中文字体栈，无需加载外部字体，渲染清晰
+- PingFang SC 在 macOS 上表现优秀，微软雅黑覆盖 Windows
+
+**英文/代码字体：** `"JetBrains Mono", "Fira Code", monospace`
+- 用于 BMAD 命令、代码片段等技术内容
+
+**字号层级：**
+- 页面标题（h1）：28px / 1.4 行高
+- 章节标题（h2）：22px / 1.4 行高
+- 小节标题（h3）：18px / 1.5 行高
+- 正文：16px / 1.75 行高——深度阅读的舒适行高
+- 辅助文字：14px / 1.5 行高——元信息、面包屑
+- 标签/徽章：12px / 1.2 行高——难度标签、时间标签
+
+### Spacing & Layout Foundation
+
+**间距基数：** 8px
+
+**间距规范：**
+- 紧凑（xs）：4px——标签内边距
+- 标准（sm）：8px——元素间小间距
+- 舒适（md）：16px——卡片内边距、列表项间距
+- 宽松（lg）：24px——区块间距
+- 开阔（xl）：32px——页面区域间距
+- 特大（2xl）：48px——主要内容区上下边距
+
+**布局结构：**
+- 侧边栏宽度：260px（固定）
+- 内容区最大宽度：800px（居中，Notion 风格）
+- 内容区左右内边距：48px
+- 流程图区域：内容区全宽
+
+**布局原则：**
+1. 内容区居中且限宽，避免长行阅读疲劳（每行 60-80 个中文字符）
+2. 大量留白，尤其是内容区与侧边栏之间
+3. 流程图和文档内容共用同一内容区，通过视图切换而非分栏
+
+### Accessibility Considerations
+
+- 深色主题文字对比度 ≥ 4.5:1（`#e0e0e0` on `#1a1a2e` = 11.3:1）
+- 角色标识色在深色背景上对比度均 ≥ 3:1
+- 可交互元素有 hover/focus 状态变化
+- 流程节点点击区域 ≥ 44px（触控友好，虽然不做移动端但不影响桌面体验）
