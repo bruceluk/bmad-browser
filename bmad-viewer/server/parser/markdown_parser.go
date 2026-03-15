@@ -18,13 +18,13 @@ func ParseMarkdown(filePath string) (*model.Document, error) {
 	raw := string(data)
 	frontmatter, content := splitFrontmatter(raw)
 
-	var fm map[string]interface{}
+	var fm map[string]any
 	if frontmatter != "" {
 		if err := yaml.Unmarshal([]byte(frontmatter), &fm); err != nil {
-			fm = make(map[string]interface{})
+			fm = make(map[string]any)
 		}
 	} else {
-		fm = make(map[string]interface{})
+		fm = make(map[string]any)
 	}
 
 	title := extractTitle(fm, content)
@@ -56,7 +56,7 @@ func splitFrontmatter(raw string) (string, string) {
 }
 
 // extractTitle gets the title from frontmatter or first heading.
-func extractTitle(fm map[string]interface{}, content string) string {
+func extractTitle(fm map[string]any, content string) string {
 	if title, ok := fm["title"]; ok {
 		if s, ok := title.(string); ok && s != "" {
 			return s

@@ -1,6 +1,6 @@
 # Story 1.2: Go 后端文档扫描与 API
 
-Status: review
+Status: done
 
 ## Story
 

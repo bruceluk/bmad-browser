@@ -5,7 +5,7 @@ type Document struct {
 	Path        string                 `json:"path"`
 	Title       string                 `json:"title"`
 	Content     string                 `json:"content"`
-	Frontmatter map[string]interface{} `json:"frontmatter"`
+	Frontmatter map[string]any `json:"frontmatter"`
 	Phase       string                 `json:"phase"`
 }
 

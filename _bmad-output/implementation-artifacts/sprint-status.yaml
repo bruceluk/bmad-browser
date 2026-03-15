@@ -45,7 +45,7 @@ development_status:
   # Epic 1: 项目基础与文档浏览
   epic-1: in-progress
   1-1-project-init-and-dev-environment: done
-  1-2-go-backend-document-scan-and-api: review
+  1-2-go-backend-document-scan-and-api: done
   1-3-frontend-document-browsing-and-rendering: backlog
   1-4-go-embed-packaging-and-deployment: backlog
   epic-1-retrospective: optional
