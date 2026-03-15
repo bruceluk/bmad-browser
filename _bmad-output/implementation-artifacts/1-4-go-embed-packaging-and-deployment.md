@@ -1,6 +1,6 @@
 # Story 1.4: Go embed 打包与一行部署
 
-Status: review
+Status: done
 
 ## Story
 
