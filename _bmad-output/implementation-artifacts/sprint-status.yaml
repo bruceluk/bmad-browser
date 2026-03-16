@@ -51,10 +51,10 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: 角色导航与流程图
-  epic-2: in-progress
+  epic-2: done
   2-1-csv-parsing-and-role-flow-api: done
   2-2-homepage-role-selection: done
-  2-3-flowchart-view-and-node-display: review
+  2-3-flowchart-view-and-node-display: done
   epic-2-retrospective: optional
 
   # Epic 3: 流程图与文档联动
