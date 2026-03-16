@@ -19,7 +19,7 @@ const isContext = props.isUpstream || props.isDownstream
 
 <template>
   <div
-    class="min-w-[140px] flex flex-col items-center gap-2 px-5 py-4 rounded-xl cursor-pointer transition-all duration-150"
+    class="w-[140px] h-[180px] flex flex-col items-center justify-center gap-2 px-5 py-4 rounded-xl cursor-pointer transition-all duration-150"
     :class="{ 'opacity-40': isContext }"
     :style="{
       border: isContext ? '2px dashed var(--border)' : isActive ? `2px solid ${roleColor}` : isVisited ? `2px solid ${roleColor}66` : '2px solid var(--border)',
@@ -42,9 +42,9 @@ const isContext = props.isUpstream || props.isDownstream
     @click="$emit('click')"
   >
     <span class="text-xl">{{ step.agentIcon }}</span>
-    <span class="text-[13px] font-semibold text-center">{{ step.name }}</span>
+    <span class="text-[13px] font-semibold text-center leading-tight">{{ step.name }}</span>
     <span
-      class="text-[10px] text-center"
+      class="text-[10px] text-center w-full truncate"
       style="font-family: 'JetBrains Mono', 'Fira Code', monospace; color: var(--text-secondary);"
     >
       {{ step.command }}
