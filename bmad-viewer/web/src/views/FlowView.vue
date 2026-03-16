@@ -100,6 +100,30 @@ function findDocPathForOutput(output: string, docs: DocumentSummary[]): string |
   return match ? match.path : null
 }
 
+function findRoleForStep(step: WorkflowStep): RoleFlow | null {
+  return roles.value.find(r => r.steps.some(s => s.code === step.code)) || null
+}
+
+async function selectContextStep(step: WorkflowStep) {
+  const targetRole = findRoleForStep(step)
+  if (!targetRole) return
+
+  // Mark current step as visited before switching
+  if (activeStep.value) {
+    visitedSteps.value.add(activeStep.value.code)
+  }
+
+  // Switch role without clearing state via switchRole (which resets activeStep)
+  currentRole.value = targetRole.role
+
+  // Find the actual step in the target role's steps array
+  await nextTick()
+  const targetStep = targetRole.steps.find(s => s.code === step.code)
+  if (targetStep) {
+    await selectStep(targetStep)
+  }
+}
+
 function navigateToDoc(path: string) {
   router.push({ name: 'doc', params: { path } })
 }
@@ -154,6 +178,7 @@ function findDocumentForStep(step: WorkflowStep, docs: DocumentSummary[]): strin
               :step="step"
               :role-color="currentRoleFlow.roleColor"
               :is-upstream="true"
+              @click="selectContextStep(step)"
             />
             <FlowArrow v-if="i < currentRoleFlow.upstream.length - 1" />
           </template>
@@ -183,6 +208,7 @@ function findDocumentForStep(step: WorkflowStep, docs: DocumentSummary[]): strin
               :step="step"
               :role-color="currentRoleFlow.roleColor"
               :is-downstream="true"
+              @click="selectContextStep(step)"
             />
             <FlowArrow v-if="i < currentRoleFlow.downstream.length - 1" />
           </template>
