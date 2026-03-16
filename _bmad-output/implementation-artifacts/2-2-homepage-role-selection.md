@@ -1,6 +1,6 @@
 # Story 2.2: 首页角色选择
 
-Status: review
+Status: done
 
 ## Story
 
