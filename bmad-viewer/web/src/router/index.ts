@@ -9,7 +9,7 @@ const router = createRouter({
       component: () => import('@/views/HomeView.vue'),
     },
     {
-      path: '/flow/:role',
+      path: '/flow/:role/:step?',
       name: 'flow',
       component: () => import('@/views/FlowView.vue'),
     },

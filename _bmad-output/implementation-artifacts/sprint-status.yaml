@@ -54,7 +54,7 @@ development_status:
   epic-2: in-progress
   2-1-csv-parsing-and-role-flow-api: done
   2-2-homepage-role-selection: done
-  2-3-flowchart-view-and-node-display: ready-for-dev
+  2-3-flowchart-view-and-node-display: review
   epic-2-retrospective: optional
 
   # Epic 3: 流程图与文档联动
