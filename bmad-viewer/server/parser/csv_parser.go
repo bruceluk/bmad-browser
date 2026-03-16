@@ -112,20 +112,20 @@ func BuildRoleFlows(steps []model.WorkflowStep) []model.RoleFlow {
 
 	return []model.RoleFlow{
 		{
-			Role:       "developer",
-			RoleColor:  "#4fc3f7",
-			Label:      "开发者",
-			Steps:      devSteps,
-			Upstream:   devUpstream,
-			Downstream: devDownstream,
-		},
-		{
 			Role:       "pm",
 			RoleColor:  "#81c784",
 			Label:      "产品经理",
 			Steps:      pmSteps,
 			Upstream:   pmUpstream,
 			Downstream: pmDownstream,
+		},
+		{
+			Role:       "developer",
+			RoleColor:  "#4fc3f7",
+			Label:      "开发者",
+			Steps:      devSteps,
+			Upstream:   devUpstream,
+			Downstream: devDownstream,
 		},
 		{
 			Role:       "qa",
