@@ -6,7 +6,7 @@ import type { RoleFlow, WorkflowStep, DocumentSummary, Document } from '@/types'
 import RoleTab from '@/components/RoleTab.vue'
 import FlowNode from '@/components/FlowNode.vue'
 import FlowArrow from '@/components/FlowArrow.vue'
-import DocMeta from '@/components/DocMeta.vue'
+import DocMeta, { type MatchedOutput } from '@/components/DocMeta.vue'
 import DocRenderer from '@/components/DocRenderer.vue'
 
 const route = useRoute()
@@ -81,6 +81,27 @@ async function selectStep(step: WorkflowStep) {
   }
 
   nextTick(() => docArea.value?.scrollIntoView({ behavior: 'smooth' }))
+}
+
+const activeStepOutputs = computed<MatchedOutput[]>(() => {
+  if (!activeStep.value || !activeStep.value.outputs) return []
+  return activeStep.value.outputs.map(output => ({
+    label: output,
+    docPath: findDocPathForOutput(output, allDocs.value),
+  }))
+})
+
+function findDocPathForOutput(output: string, docs: DocumentSummary[]): string | null {
+  const keywords = output.toLowerCase().split(/\s+/)
+  const match = docs.find(doc => {
+    const target = (doc.path + ' ' + doc.title).toLowerCase()
+    return keywords.some(kw => kw.length > 2 && target.includes(kw))
+  })
+  return match ? match.path : null
+}
+
+function navigateToDoc(path: string) {
+  router.push({ name: 'doc', params: { path } })
 }
 
 function findDocumentForStep(step: WorkflowStep, docs: DocumentSummary[]): string | null {
@@ -183,6 +204,8 @@ function findDocumentForStep(step: WorkflowStep, docs: DocumentSummary[]): strin
           v-if="currentRoleFlow"
           :step="activeStep"
           :role-color="currentRoleFlow.roleColor"
+          :matched-outputs="activeStepOutputs"
+          @navigate="navigateToDoc"
         />
 
         <div v-if="currentDoc">
