@@ -61,5 +61,5 @@ development_status:
   epic-3: in-progress
   3-1-node-click-and-document-display: done
   3-2-command-and-agent-info-display: done
-  3-3-upstream-downstream-navigation: backlog
+  3-3-upstream-downstream-navigation: ready-for-dev
   epic-3-retrospective: optional
