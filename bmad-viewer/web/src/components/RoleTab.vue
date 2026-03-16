@@ -18,7 +18,7 @@ const roleIcons: Record<string, string> = {
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-2 justify-center">
     <button
       v-for="role in roles"
       :key="role.role"
