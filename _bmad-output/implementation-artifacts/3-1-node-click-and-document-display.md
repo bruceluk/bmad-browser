@@ -1,6 +1,6 @@
 # Story 3.1: 节点点击与文档展示
 
-Status: review
+Status: done
 
 ## Story
 

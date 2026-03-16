@@ -59,7 +59,7 @@ development_status:
 
   # Epic 3: 流程图与文档联动
   epic-3: in-progress
-  3-1-node-click-and-document-display: review
+  3-1-node-click-and-document-display: done
   3-2-command-and-agent-info-display: backlog
   3-3-upstream-downstream-navigation: backlog
   epic-3-retrospective: optional
