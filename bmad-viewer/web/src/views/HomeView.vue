@@ -52,12 +52,12 @@ function goToFlow(role: string) {
 
 <template>
   <div class="min-h-screen flex flex-col items-center justify-center" :class="{ 'cursor-wait': isLoading }">
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold mb-3">BMAD Viewer</h1>
-      <p class="text-lg opacity-60">这是一个用 BMAD 方法从零构建的真实项目。<br>选择你的角色，了解 AI 如何参与你的工作流程。</p>
+    <div class="text-center mb-16">
+      <h1 class="text-5xl font-bold mb-4">BMAD Viewer</h1>
+      <p class="text-lg opacity-60 max-w-xl mx-auto leading-relaxed">这是一个用 BMAD 方法从零构建的真实项目。<br>选择你的角色，了解 AI 如何参与你的工作流程。</p>
     </div>
 
-    <div class="flex gap-6 flex-wrap justify-center">
+    <div class="flex gap-8 flex-wrap justify-center px-8">
       <RoleCard
         v-for="role in roles"
         :key="role.role"

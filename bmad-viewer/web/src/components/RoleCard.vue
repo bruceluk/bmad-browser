@@ -16,7 +16,7 @@ defineEmits<{
 
 <template>
   <div
-    class="w-[300px] p-7 rounded-2xl cursor-pointer transition-all duration-150"
+    class="w-[340px] p-8 rounded-2xl cursor-pointer transition-all duration-150"
     style="background-color: var(--surface); border: 1px solid var(--border);"
     @mouseenter="(e) => {
       const el = e.currentTarget as HTMLElement
@@ -33,14 +33,14 @@ defineEmits<{
     @click="$emit('click')"
   >
     <div
-      class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
+      class="w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-5"
       :style="{ backgroundColor: roleColor + '26', color: roleColor }"
     >
       {{ icon }}
     </div>
-    <h3 class="text-lg font-semibold mb-2">{{ label }}</h3>
-    <p class="text-sm opacity-60 leading-relaxed mb-4">{{ description }}</p>
-    <div class="text-xs opacity-50 flex items-center gap-3">
+    <h3 class="text-xl font-semibold mb-3">{{ label }}</h3>
+    <p class="text-sm opacity-60 leading-relaxed mb-5">{{ description }}</p>
+    <div class="text-sm opacity-50 flex items-center gap-4">
       <span>📄 {{ stepCount }} 个步骤</span>
       <span>⏱ {{ totalDuration }}</span>
     </div>

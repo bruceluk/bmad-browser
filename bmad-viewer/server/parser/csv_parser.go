@@ -154,8 +154,15 @@ func isDevStep(s model.WorkflowStep) bool {
 	if strings.Contains(nameLower, "sprint planning") || strings.Contains(nameLower, "sprint status") {
 		return false
 	}
+	if strings.Contains(nameLower, "readiness") {
+		return false
+	}
 	agentLower := strings.ToLower(s.AgentName)
 	if strings.Contains(agentLower, "qa") || strings.Contains(agentLower, "quinn") {
+		return false
+	}
+	// Exclude Scrum Master (Bob) steps
+	if strings.Contains(agentLower, "bob") {
 		return false
 	}
 	return true
