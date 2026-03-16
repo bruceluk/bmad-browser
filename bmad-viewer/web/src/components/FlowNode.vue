@@ -7,6 +7,7 @@ const props = defineProps<{
   isUpstream?: boolean
   isDownstream?: boolean
   isActive?: boolean
+  isVisited?: boolean
 }>()
 
 defineEmits<{
@@ -21,7 +22,7 @@ const isContext = props.isUpstream || props.isDownstream
     class="min-w-[140px] flex flex-col items-center gap-2 px-5 py-4 rounded-xl cursor-pointer transition-all duration-150"
     :class="{ 'opacity-40': isContext }"
     :style="{
-      border: isContext ? '2px dashed var(--border)' : isActive ? `2px solid ${roleColor}` : '2px solid var(--border)',
+      border: isContext ? '2px dashed var(--border)' : isActive ? `2px solid ${roleColor}` : isVisited ? `2px solid ${roleColor}66` : '2px solid var(--border)',
       backgroundColor: isActive ? roleColor + '14' : 'var(--surface)',
     }"
     @mouseenter="(e) => {
@@ -34,7 +35,7 @@ const isContext = props.isUpstream || props.isDownstream
     @mouseleave="(e) => {
       if (!isContext) {
         const el = e.currentTarget as HTMLElement
-        el.style.borderColor = isActive ? roleColor : 'var(--border)'
+        el.style.borderColor = isActive ? roleColor : isVisited ? roleColor + '66' : 'var(--border)'
         el.style.transform = ''
       }
     }"
